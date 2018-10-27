@@ -9,7 +9,7 @@ class Drone:
 		id: Drone ID
 		addr: Drone address
 	"""
-	def __init__(id, addr):
+	def __init__(self, id, addr):
 		self.droneID = id
 		self.droneAddr = addr
 		status = api.connectDrone(globals.SWARMNAME, id, addr)
@@ -18,6 +18,7 @@ class Drone:
 		self.home = self.pos
 		self.packages = []
 		self.currentDelivery = ""
+		api.calibrateDrone(globals.SWARMNAME, id)
 
 	def disconnect(self):
 		"""Disconnects the drone from the server
