@@ -1,6 +1,7 @@
 import urllib.request
 import json
-from globals import SERVERIP
+
+debugMode = False
 
 def makeGET(request):
 	"""Makes a GET request to the server
@@ -11,9 +12,12 @@ def makeGET(request):
 	Returns:
 		The server's response
 	"""
-	return json.loads(
-		urllib.request.urlopen("http://{0}:5000/api/{1}".format(SERVERIP, request)).read().decode("utf-8")
+	resp = json.loads(
+		urllib.request.urlopen("http://10.4.14.28:5000/api/{0}".format(request)).read().decode("utf-8")
 	)
+	if debugMode:
+		print("{0} -> {1}".format(request, resp))
+	return resp
 
 def getArena():
 	"""Gets the arena data
