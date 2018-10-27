@@ -1,5 +1,6 @@
 import api
 import globals
+import numpy
 
 class Drone:
 	"""Creates a new Drone object
@@ -13,7 +14,7 @@ class Drone:
 		self.droneAddr = addr
 		status = api.connectDrone(globals.SWARMNAME, id, addr)
 		status = api.droneStatus(globals.SWARMNAME, id)
-		self.pos = (status["x"], status["y"], status["z"])
+		self.pos = numpy.array([status["x"], status["y"], status["z"]])
 		self.home = self.pos
 		self.packages = []
 		self.currentDelivery = ""
@@ -28,14 +29,36 @@ class Drone:
 		return status["success"]
 	
 	def update(self):
+		"""Updates the drone's properties
+		"""
 		status = api.droneStatus(globals.SWARMNAME, self.droneID)
-		self.pos = (status["x"], status["y"], status["z"])
+		self.pos = numpy.array([status["x"], status["y"], status["z"]])
+
+	def takeoff(self, height):
+		"""Commands the drone to takeoff
+
+		Args:
+			height: Desired height
+
+		Returns:
+			Whether the takeoff succeeded
+		"""
+		status = api.takeoff(globals.SWARMNAME, self.droneID, height, 1)
+		return status["success"]
+
+	def land(self, height):
+		"""Commands the drone to land
+
+		Args:
+			height: Height of landing area
+		"""
+		api.land(globals.SWARMNAME, self.droneID, height, 1)
 
 	def goToPoint(self, point):
 		"""Commands the drone to fly to a given point
 
 		Args:
-			point: The destination point as a tuple (x, y, z)
+			point: The destination point as a numpy array
 
 		Returns:
 			Estimated travel time before the drone reaches the point
