@@ -42,18 +42,22 @@ class Drone:
 			height: Desired height
 
 		Returns:
-			Whether the takeoff succeeded
+			Duration of takeoff
 		"""
 		status = api.takeoff(globals.SWARMNAME, self.droneID, height, 1)
-		return status["success"]
+		return status["duration"]
 
 	def land(self, height):
 		"""Commands the drone to land
 
 		Args:
 			height: Height of landing area
+
+		Returns:
+			Duration of landing
 		"""
-		api.land(globals.SWARMNAME, self.droneID, height, 1)
+		status = api.land(globals.SWARMNAME, self.droneID, height, 1)
+		return status["duration"]
 
 	def goToPoint(self, point):
 		"""Commands the drone to fly to a given point
