@@ -103,7 +103,7 @@ def connectDrone(swarm, drone, address):
 	Returns:
 		Server response
 	"""
-	return makeGET("{0}/{1}/connect?r=1&c=80&a={2}".format(swarm, drone, address))
+	return makeGET("{0}/{1}/connect?r=0&c=94&a={2}&dr=2M".format(swarm, drone, address))
 
 def deliver(swarm, drone, package):
 	"""Sends a delivery request for a package

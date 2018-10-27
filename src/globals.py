@@ -1,0 +1,9 @@
+SWARMNAME = "OKAY"
+DRONES = [
+	"24", "25", "26"
+]
+DRONEADDRS = [
+	"24" : "E7E7E7E724",
+	"25" : "E7E7E7E725",
+	"26" : "E7E7E7E726"
+]
