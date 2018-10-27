@@ -1,17 +1,17 @@
+import time
 import globals
 import numpy as np
 
 def followWaypoints(waypoints, drone):
-	"""Commands a drone to follow a set of waypoints
+    """Commands a drone to follow a set of waypoints
 
-	Args:
-		waypoints: A list of waypoints to follow as tuples
-		drone: Drone ID
-	
-	Returns:
-		Something
-	"""
+    Args:
+        waypoints: A list of waypoints to follow as tuples
+        drone: Drone ID
 
+    Returns:
+        Something
+    """
     r = 0.05
     waittime = 0.01
     # init
@@ -31,7 +31,9 @@ def followWaypoints(waypoints, drone):
         if(time.time()>endtime):
             currentWaypointIdx+=1
             nextWaypointIdx+=1
+            print("accessing {0}".format(nextWaypointIdx))
             duration = drone.goToPoint(waypoints[nextWaypointIdx])
+            print("index ok")
             starttime=time.time()
             endtime = starttime+duration
 
@@ -39,16 +41,15 @@ def followWaypoints(waypoints, drone):
 
 
 def followWaypointsComplex(waypoints, drone):
-	"""Commands a drone to follow a set of waypoints
+    """Commands a drone to follow a set of waypoints
 
-	Args:
-		waypoints: A list of waypoints to follow as tuples
-		drone: Drone ID
-	
-	Returns:
-		Something
-	"""
+    Args:
+        waypoints: A list of waypoints to follow as tuples
+        drone: Drone ID
 
+    Returns:
+        Something
+    """
     r = 0.05
     waittime = 0.01
     # init
