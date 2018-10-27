@@ -13,19 +13,21 @@ def followWaypoints(waypoints, drone):
 	"""
 
     r = 0.05
-    pos = drone.pos
+    # init
 
-    currentPos = drone.home
+    currentPos = drone.pos
     currentWaypointIdx = 0
     nextWaypointIdx = 1
+
+    #initial goto
     drone.goToPoint(waypoints[nextWaypointIdx])
     while(currentWaypointIdx<len(waypoints)):
         currentPos = drone.pos
         currentWaypointIdx_tmp = getCurrentWaypointIdx(currentPos, waypoints)
-        if(currentWaypointIdx_tmp = currentWaypointIdx):
+        if(currentWaypointIdx_tmp == currentWaypointIdx):
             wait()
             drone.update()
-        elif(currentWaypointIdx_tmp = nextWaypointIdx):
+        elif(currentWaypointIdx_tmp == nextWaypointIdx):
             currentWaypointIdx += 1
             nextWaypointIdx += 1
             drone.goToPoint(waypoints[nextWaypointIdx])
