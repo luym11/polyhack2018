@@ -1,21 +1,136 @@
 import api
+import math
 import numpy as np
 
-MAP = api.getArena()
+MAP = api.getArena()["buildings"]
 
 # Make sure that the MAP has np.arrays of the obstacle coordinates!
 
-def collisionCheck(start, end, obs_rad):
-    coll_points = np.array([])
+# ASSUMES WAYPOINTS IS AN EMPTY LIST, make sure z = 0.5 in start and end
+def generateWaypoints(start, end, waypoints):
+    # print(waypoints)
     dist_vec = end - start
+    # print(dist_vec)
 
+    # Determine number of intermediate points based on distance
     # dist = np.linalg.norm(dist_vec)
-    # N_p = round(dist / 10, 0)
-    N_p = 10
-    step_size = 1.0/N_p
-    coll_points = [step_size*i for i in range(N_p)]
+    # N_p = np.ceil(10*dist, 0)
 
-    return
+    N_p = 10 # HARDCODE, REMOVE!
+    steps = np.linspace(0, 1, N_p)  # 0 to 1 with 1/N_p step_size
+    # print(steps)
 
-def generateWaypoints(start, end):
-    return [start, end]
+    # Create intermediate points
+    x_coords = start[0] + steps*dist_vec[0]
+    y_coords = start[1] + steps*dist_vec[1]
+    z_coords = start[2] + steps*dist_vec[2]
+
+    print(A)
+
+    coll_points = np.vstack([x_coords, y_coords, z_coords])
+    # print(coll_points)
+
+    N_obs = 4 # CHANGE
+    col_detected = False
+
+    print(B)
+
+    # Loop through all points and all obstacles
+    for i in range(N_p):
+        for j in range(N_obs):
+            # Get the position of the jth obstacle
+            obs_pos = MAP[j]
+            # Build envelope around obstacles
+            obs_limits = returnEnvelope(obs_pos)
+            # Check for collision (ith point with all obstacles)
+            col_detected = isInSquare(coll_points[:,i], obs_limits)
+
+            # If there is a collision, then move inner point to a corner
+            # Afterwards, recursion!
+            print(C)
+            if col_detected:
+                new_point = movePointOut(coll_points[:,i], obs_pos)
+                waypoints.append(new_point)
+
+        waypoints.append(coll_points[:,i])
+
+    # Return list of np.arrays!
+    return waypoints
+
+
+# # While last waypoint is not equal to goal, continue recursion
+# while(!np.array_equal(waypoints[-1], goal)):
+#     collisionCheck(waypoints[-1], goal, waypoints)
+
+# def generateWaypoints(start, end):
+#     return [start, end]
+
+# Give obstacle position and compute x_min/max bounds here?
+def isInSquare(point, limits):
+    x_pos = point[0]
+    y_pos = point[1]
+
+    # Confirm ordering with returnEnvelope function!
+    x_min = limits[0]
+    x_max = limits[1]
+    y_min = limits[2]
+    y_max = limits[3]
+
+    within_x = (x_pos < x_max and x_pos > x_min)
+    within_y = (y_pos < y_max and y_pos > y_min)
+    if within_x and within_y:
+        return True
+    else:
+        return False
+
+def movePointOut(p, c):
+    '''
+    Move the points that are inside the obstacle envelope to 20cm outside
+    of it's nearest corner
+
+    Args:
+        p: the point needs to be moved out
+        c: center of the obstacle
+
+    Returns:
+        mp: the moved point
+    '''
+    r = 0.4 # radius of the envelope
+    h = 0.5 # default height
+
+    corners = []
+    corners.append(np.asarray([c[0] - r * math.sqrt(2), c[1] + r * math.sqrt(2)])) # left up
+    corners.append(np.asarray([c[0] - r * math.sqrt(2), c[1] - r * math.sqrt(2)])) # left down
+    corners.append(np.asarray([c[0] + r * math.sqrt(2), c[1] + r * math.sqrt(2)])) # right up
+    corners.append(np.asarray([c[0] + r * math.sqrt(2), c[1] - r * math.sqrt(2)])) # right down
+
+    distances = [np.linalg.norm(corner_point - p[0:2]) for corner_point in corners]
+
+    index = np.argmin(distances) # index of the minimum distance
+
+    mp = [0, 0, h]
+    mp[0:2] = corners[index]
+
+    return mp
+
+# print(movePointOut([5.1, 4.9, 3],[5, 5, 4]))
+
+def returnEnvelope(c):
+    '''
+    This function takes the center point of the obstacle and returns an envelope indicating it's
+    edge, namely x_min, x_max, y_min, y_max
+
+    Args:
+        c: center point of the obstacle we want to compute
+
+    Returns:
+        e: a list consisting [xmin, xmax, ymin, ymax]
+    '''
+    r = 0.4 # radius of the envelope
+
+    e = []
+    e.append(c[0] - r) # xmin
+    e.append(c[0] + r) # xmax
+    e.append(c[1] - r) # ymin
+    e.append(c[1] + r) # ymax
+    return e
