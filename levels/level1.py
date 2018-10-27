@@ -1,4 +1,4 @@
-import ../src/followPath
+import ../src/followpath
 import signal
 import sys
 

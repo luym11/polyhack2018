@@ -12,7 +12,7 @@ def followWaypoints(waypoints, drone):
 		Something
 	"""
 
-    r = 0.05
+    r = 0.1
     waittime = 0.01
     # init
 
@@ -21,7 +21,7 @@ def followWaypoints(waypoints, drone):
     nextWaypointIdx = 1
 
     #initial goto
-    duration = drone.goToPoint(waypoints[nextWaypointIdx])
+    duration = drone.goToPoint(waypoints.pop(0))
     starttime=time.time()
     endtime = starttime+duration
     while(currentWaypointIdx<len(waypoints)):
@@ -31,7 +31,7 @@ def followWaypoints(waypoints, drone):
         if(time.time()>endtime):
             currentWaypointIdx+=1
             nextWaypointIdx+=1
-            duration = drone.goToPoint(waypoints[nextWaypointIdx])
+            duration = drone.goToPoint(waypoints.pop(0))
             starttime=time.time()
             endtime = starttime+duration
 
