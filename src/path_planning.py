@@ -16,7 +16,7 @@ def generateWaypoints(start, end, waypoints):
     # dist = np.linalg.norm(dist_vec)
     # N_p = np.ceil(10*dist, 0)
 
-    N_p = 10 # HARDCODE, REMOVE!
+    N_p = 50 # HARDCODE, REMOVE!
     steps = np.linspace(0, 1, N_p)  # 0 to 1 with 1/N_p step_size
     # print(steps)
 
@@ -25,7 +25,6 @@ def generateWaypoints(start, end, waypoints):
     y_coords = start[1] + steps*dist_vec[1]
     z_coords = start[2] + steps*dist_vec[2]
 
-    print(A)
 
     coll_points = np.vstack([x_coords, y_coords, z_coords])
     # print(coll_points)
@@ -33,26 +32,31 @@ def generateWaypoints(start, end, waypoints):
     N_obs = 4 # CHANGE
     col_detected = False
 
-    print(B)
 
     # Loop through all points and all obstacles
     for i in range(N_p):
+        col_detected = [False, False, False, False]
         for j in range(N_obs):
+            
             # Get the position of the jth obstacle
             obs_pos = MAP[j]
             # Build envelope around obstacles
             obs_limits = returnEnvelope(obs_pos)
             # Check for collision (ith point with all obstacles)
-            col_detected = isInSquare(coll_points[:,i], obs_limits)
+            col_detected[j] = isInSquare(coll_points[:,i], obs_limits)
 
             # If there is a collision, then move inner point to a corner
             # Afterwards, recursion!
-            print(C)
-            if col_detected:
+            
+            if col_detected[j]:
                 new_point = movePointOut(coll_points[:,i], obs_pos)
                 waypoints.append(new_point)
-
-        waypoints.append(coll_points[:,i])
+                # print('appended0 %f, %f', (new_point[0], new_point[1]) )
+    
+        if(np.array_equal(np.asarray(col_detected), [False, False, False, False])):
+            # print('appended1 %f, %f', (coll_points[0,i], coll_points[1,i]) )
+            waypoints.append(coll_points[:,i])
+        
 
     # Return list of np.arrays!
     return waypoints
@@ -110,7 +114,6 @@ def movePointOut(p, c):
 
     mp = [0, 0, h]
     mp[0:2] = corners[index]
-
     return mp
 
 # print(movePointOut([5.1, 4.9, 3],[5, 5, 4]))
