@@ -6,14 +6,26 @@ class Drone:
 
 	Args:
 		id: Drone ID
+		addr: Drone address
 	"""
-	def __init__(id):
+	def __init__(id, addr):
 		self.droneID = id
+		self.droneAddr = addr
+		status = api.connectDrone(globals.SWARMNAME, id, addr)
 		status = api.droneStatus(globals.SWARMNAME, id)
 		self.pos = (status["x"], status["y"], status["z"])
 		self.home = self.pos
 		self.packages = []
 		self.currentDelivery = ""
+
+	def disconnect(self):
+		"""Disconnects the drone from the server
+
+		Returns:
+			Whether the disconnect succeeded
+		"""
+		status = api.disconnectDrone(globals.SWARMNAME, self.droneID)
+		return status["success"]
 	
 	def update(self):
 		status = api.droneStatus(globals.SWARMNAME, self.droneID)
