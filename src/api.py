@@ -1,4 +1,5 @@
 import urllib.request
+import json
 
 def makeGET(request):
 	"""Makes a GET request to the server
@@ -9,7 +10,9 @@ def makeGET(request):
 	Returns:
 		The server's response
 	"""
-	return urllib.request.urlopen("http://10.4.14.28:5000/api/{0}".format(request)).read()
+	return json.loads(
+		urllib.request.urlopen("http://10.4.14.28:5000/api/{0}".format(request)).read().decode("utf-8")
+	)
 
 def getArena():
 	"""Gets the arena data
@@ -18,6 +21,28 @@ def getArena():
 		Server response for /api/arena
 	"""
 	return makeGET("arena")
+
+def package(swarm):
+	"""Orders a new package for the swarm
+
+	Args:
+		swarm: Swarm ID
+
+	Returns:
+		Server response
+	"""
+	return makeGET("{0}/package".format(swarm))
+
+def printDeliveries(swarm):
+	"""Obtains the delivery stats for the swarm
+
+	Args:
+		swarm: Swarm ID
+	
+	Returns:
+		Server response
+	"""
+	return makeGET("{0}/print_deliveries".format(swarm))
 
 def registerSwarm(name, arena, seed):
 	"""Registers a swarm with the given properties
