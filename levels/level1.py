@@ -1,17 +1,24 @@
-import ../src/followPath
-import signal
 import sys
+sys.path.append("../src")
+
+import followpath
+import signal
+from drone import Drone
+import globals
+import api
+from path_planning import generateWaypoints
 
 keepDelivering = True
 
-def terminate():
-	global continue
+def terminate(sig, frame):
+	global keepDelivering
 	keepDelivering = False
 
 signal.signal(signal.SIGINT, terminate)
 
-droneNum = input("Enter drone number: ") - 24
-drone = Drone(globals.DRONES[droneNum], globals.DRONEADDRS[droneNum])
+droneNum = int(input("Enter drone number: ")) - 24
+droneID = globals.DRONES[droneNum]
+drone = Drone(droneID, globals.DRONEADDRS[droneID])
 while keepDelivering:
 	package = api.package(globals.SWARMNAME)
 	drone.land(0)
@@ -24,3 +31,4 @@ while keepDelivering:
 	drone.takeoff(1)
 	waypoints = generateWaypoints(drone.pos, drone.home)
 	followWaypoints(drone, waypoints)
+drone.disconnect()
