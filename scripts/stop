@@ -1,0 +1,3 @@
+#!/bin/bash
+
+curl -X GET "http://10.4.14.28:5000/api/OKAY/"$1"/stop" -H  "accept: application/json"
