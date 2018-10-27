@@ -169,7 +169,7 @@ def droneStatus(swarm, drone):
 	Returns:
 		Drone status
 	"""
-	return makeGET(swarm, drone)
+	return makeGET("{0}/{1}/status".format(swarm, drone))
 
 def stopDrone(swarm, drone):
 	"""Commands a drone to stop
