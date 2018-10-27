@@ -18,7 +18,7 @@ def terminate(sig, frame):
 	global keepDelivering
 	keepDelivering = False
 
-signal.signal(signal.SIGINT, terminate)
+#signal.signal(signal.SIGINT, terminate)
 
 droneNum = int(input("Enter drone number: ")) - 24
 droneID = globals.DRONES[droneNum]
@@ -29,7 +29,7 @@ try:
 		drone.getPackage(package)
 		drone.currentDelivery = package["id"]
 		time.sleep(drone.takeoff(0.3))
-		waypoints = generateWaypoints(drone.pos, numpy.array([package["coordinates"][0], package["coordinates"][1], 0.3])).delete(0)
+		waypoints = generateWaypoints(drone.pos, numpy.array([package["coordinates"][0], package["coordinates"][1], 0.3]))[1:]
 		followWaypoints(waypoints, drone)
 		time.sleep(drone.land(0))
 		drone.deliver()

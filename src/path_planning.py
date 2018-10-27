@@ -3,23 +3,21 @@ import math
 import numpy as np
 
 MAP = api.getArena()["buildings"]
-
 # Make sure that the MAP has np.arrays of the obstacle coordinates!
 
-# ASSUMES WAYPOINTS IS AN EMPTY LIST, make sure z = 0.5 in start and end
-def generateWaypoints(start, end, waypoints):
+# ASSUMES WAYPOINTS IS AN EMPTY LIST, make sure z = 0.3 in start and end
+def generateWaypoints(start, end):
     # print(waypoints)
+    waypoints = []
     dist_vec = end - start
     # print(dist_vec)
-
     # Determine number of intermediate points based on distance
     # dist = np.linalg.norm(dist_vec)
     # N_p = np.ceil(10*dist, 0)
 
-    N_p = 50 # HARDCODE, REMOVE!
+    N_p = 15 # HARDCODE, REMOVE!
     steps = np.linspace(0, 1, N_p)  # 0 to 1 with 1/N_p step_size
     # print(steps)
-
     # Create intermediate points
     x_coords = start[0] + steps*dist_vec[0]
     y_coords = start[1] + steps*dist_vec[1]
@@ -28,10 +26,8 @@ def generateWaypoints(start, end, waypoints):
 
     coll_points = np.vstack([x_coords, y_coords, z_coords])
     # print(coll_points)
-
     N_obs = 4 # CHANGE
     col_detected = False
-
 
     # Loop through all points and all obstacles
     for i in range(N_p):
@@ -100,7 +96,7 @@ def movePointOut(p, c):
         mp: the moved point
     '''
     r = 0.4 # radius of the envelope
-    h = 0.5 # default height
+    h = 0.3 # default height
 
     corners = []
     corners.append(np.asarray([c[0] - r * math.sqrt(2), c[1] + r * math.sqrt(2)])) # left up

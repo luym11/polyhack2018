@@ -1,7 +1,7 @@
 import urllib.request
 import json
 
-debugMode = False
+debugMode = True
 
 def makeGET(request):
 	"""Makes a GET request to the server
