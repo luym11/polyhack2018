@@ -10,9 +10,9 @@ import numpy
 import time
 import multiprocessing
 
-api.debugMode = False
+api.debugMode = True
 
-def sendDrone(droneNum, height):
+def sendDrone(droneNum, trajectories):
 	droneID = globals.DRONES[droneNum]
 	drone = Drone(droneID, globals.DRONEADDRS[droneID])
 	try:
@@ -21,14 +21,17 @@ def sendDrone(droneNum, height):
 			drone.getPackage(package)
 			drone.currentDelivery = package["id"]
 			time.sleep(drone.takeoff(0.3))
-			waypoints = generateWaypoints(drone.pos, numpy.array([package["coordinates"][0], package["coordinates"][1], height]))
+			print("1")
+			waypoints = generateWaypoints(drone.pos, numpy.array([package["coordinates"][0], package["coordinates"][1], 0.3]))
 			print(waypoints)
-			followWaypoints(drone, waypoints)
+			print("1.5")
+			followWaypoints(drone, waypoints, trajectories)
+			print("2")
 			time.sleep(drone.land(0))
 			drone.deliver()
 			time.sleep(drone.takeoff(0.3))
 			waypoints = generateWaypoints(drone.pos, drone.home)
-			followWaypoints(drone, waypoints)
+			followWaypoints(drone, waypoints, trajectories)
 			time.sleep(drone.land(0))
 	except Exception as e:
 		print(e)
@@ -36,11 +39,16 @@ def sendDrone(droneNum, height):
 		api.stopDrone(globals.SWARMNAME, drone.droneID)
 		drone.disconnect()
 
+manager = multiprocessing.Manager()
+trajectories = manager.dict()
+
 count = int(input("How many drones? "))
 nums = [int(input("Enter drone number: ")) - 24 for i in range(count)]
-i = 0
+proc = None
 for drone in nums:
-	p = multiprocessing.Process(target=sendDrone, args=(drone, 0.3 + i * 0.2))
+	trajectories[globals.DRONES[drone]] = {}
+	p = multiprocessing.Process(target=sendDrone, args=(drone, trajectories))
 	p.start()
+	proc = p
 	time.sleep(5)
-	i += 1
+proc.join()

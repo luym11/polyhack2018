@@ -18,12 +18,10 @@ def generateWaypoints(start, end):
 	# Loop through all points and all obstacles
 	for obstacle in MAP:
 		if alongPath(start, obstacle, end):
-			print("along path")
 			localSafetyX, localSafetyY = safety, safety
 			x0, x1, y0, y1 = returnEnvelope(obstacle)
 			xo, xf = x0, x1
 			if start[0] >= x1:
-				print("coming from the right")
 				xo, xf = xf, xo
 				localSafetyX *= -1
 			yo, yf = y0, y1
@@ -31,9 +29,7 @@ def generateWaypoints(start, end):
 				yo, yf = yf, yo
 				localSafetyY *= -1
 			oldLen = len(waypoints)
-			print(yo, grad * (xo - start[0]) + start[1], yf)
 			if between(yo, grad * (xo - start[0]) + start[1], yf):
-				print("hitting the side")
 				waypoints += [
 					np.array([
 						xo - localSafetyX, yo - localSafetyY, height
@@ -93,7 +89,7 @@ def returnEnvelope(c):
 	Returns:
 		e: a list consisting [xmin, xmax, ymin, ymax]
 	'''
-	r = 0.2 # radius of the envelope
+	r = 0.3 # radius of the envelope
 
 	e = []
 	e.append(c[0] - r) # xmin
