@@ -86,7 +86,7 @@ class Drone:
 			return -1
 		api.pickup(globals.SWARMNAME, self.droneID, package["id"])
 		self.packages.append(package)
-		return totalWeight - package["weight"]
+		return 3 - (totalWeight + package["weight"])
 	
 	def deliver(self):
 		"""Attempts to deliver the current package

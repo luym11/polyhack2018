@@ -56,12 +56,31 @@ def getBestBundle(home):
 	]
 	profitable = sorted(
 		profitable,
-		key=lambda pkgs: numpy.linalg.norm(home - numpy.array([
-			pkgs[0]["coordinates"]
-		]))
+		key=lambda bundle: 20 * len([pkg for pkg in bundle if pkg["weight"] == 0.5]) + 10 * len([pkg for pkg in bundle if pkg["weight"] == 0.75]) * len([pkg for pkg in bundle if pkg["weight"] == 1])
 	)
-	profitable = profitable[0][:3]
+	return profitable[0]
+
+def removeFromBacklog(packages):
 	backlog = [
 		pkg for pkg in backlog if (True not in [pkg["id"] == profit["id"] for profit in profitable])
 	]
-	return profitable
+
+def getBestBundle3():
+	"""Gets the most profitable bundle of packages to deliver
+
+	Returns:
+		List of the most profitable packages to deliver
+	"""
+	global backlog
+	global destinations
+	sameDest = [[
+		pkg for pkg in backlog if pkg["coordinates"] == dst
+	] for dst in destinations]
+	profitable = [
+		bundle for bundle in sameDest if len(bundle) >= 3
+	]
+	profitable = sorted(
+	profitable,
+		key=lambda bundle: 20 * len([pkg for pkg in bundle if pkg["weight"] == 0.5]) + 10 * len([pkg for pkg in bundle if pkg["weight"] == 0.75]) * len([pkg for pkg in bundle if pkg["weight"] == 1])
+	)
+	return profitable[0]
