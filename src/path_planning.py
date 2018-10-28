@@ -13,10 +13,10 @@ def generateWaypoints(start, end):
     # print(dist_vec)
     # Determine number of intermediate points based on distance
     dist = np.linalg.norm(dist_vec)
-    N_p = int(7 * dist) + 1 #np.ceil(20*dist)
-    print("dist",dist)
-    print("N_p",N_p)
-    #N_p = 15 # HARDCODE, REMOVE!
+    # N_p = int(7 * dist) + 1 #np.ceil(20*dist)
+    # print("dist",dist)
+    # print("N_p",N_p)
+    N_p = 50 # HARDCODE, REMOVE!
     steps = np.linspace(0, 1, N_p)  # 0 to 1 with 1/N_p step_size
     # print(steps)
     # Create intermediate points
@@ -24,11 +24,14 @@ def generateWaypoints(start, end):
     y_coords = start[1] + steps*dist_vec[1]
     z_coords = 0.3*np.ones((N_p,))
 
-    print("1")
     coll_points = np.vstack([x_coords, y_coords, z_coords])
-    print(coll_points)
+    # print(coll_points)
     N_obs = 4 # CHANGE
     col_detected = False
+
+    point_col = np.zeros((N_p,), dtype=bool)
+    point_col[0] = True
+    point_col[-1] = True
 
     # Loop through all points and all obstacles
     for i in range(N_p):
@@ -46,17 +49,36 @@ def generateWaypoints(start, end):
             
             if col_detected[j]:
                 new_point = movePointOut(coll_points[:,i], obs_pos)
-                if not np.array_equal(waypoints[-1], new_point):
-                    waypoints.append(new_point)
+                # if not np.array_equal(waypoints[-1], new_point):
+                point_col[i] = 1
+                waypoints.append(new_point)
                 # print('appended0 %f, %f', (new_point[0], new_point[1]) )
     
         if(np.array_equal(np.asarray(col_detected), [False, False, False, False])):
             # print('appended1 %f, %f', (coll_points[0,i], coll_points[1,i]) )
             waypoints.append(coll_points[:,i])
         
+    print(point_col)
+    # Stupid shit
+    filt_wp = []
+    for n in range(len(waypoints)):
+        if point_col[n] == 1:
+            filt_wp.append(waypoints[n])
 
-    # Return list of np.arrays!
-    return waypoints
+    dupl_log = np.zeros((N_p,), dtype=bool)
+    for l in range(len(filt_wp)):
+        if l > 0:
+            if np.array_equal(filt_wp[l], filt_wp[l-1]):
+                dupl_log[l] = 1
+
+    sec_filt_wp = []
+    for k in range(len(filt_wp)):
+        if dupl_log[k] == 0:
+            sec_filt_wp.append(filt_wp[k])
+
+    print(len(sec_filt_wp))
+
+    return sec_filt_wp
 
 
 # # While last waypoint is not equal to goal, continue recursion

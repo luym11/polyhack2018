@@ -12,7 +12,7 @@ import numpy
 import time
 
 askUser = True
-api.debugMode = True
+#api.debugMode = True
 keepDelivering = True
 
 def terminate(sig, frame):

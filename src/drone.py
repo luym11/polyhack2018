@@ -33,6 +33,7 @@ class Drone:
 		"""Updates the drone's properties
 		"""
 		status = api.droneStatus(globals.SWARMNAME, self.droneID)
+		
 		self.pos = numpy.array([status["x"], status["y"], status["z"]])
 
 	def takeoff(self, height):
@@ -68,7 +69,7 @@ class Drone:
 		Returns:
 			Estimated travel time before the drone reaches the point
 		"""
-		resp = api.droneGoto(globals.SWARMNAME, self.droneID, point[0], point[1], point[2], 0, 1)
+		resp = api.droneGoto(globals.SWARMNAME, self.droneID, point[0], point[1], point[2], 0, 0.5)
 		return resp["duration"]
 	
 	def getPackage(self, package):
