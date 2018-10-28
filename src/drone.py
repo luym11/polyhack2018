@@ -28,12 +28,12 @@ class Drone:
 		"""
 		status = api.disconnectDrone(globals.SWARMNAME, self.droneID)
 		return status["success"]
-	
+
 	def update(self):
 		"""Updates the drone's properties
 		"""
 		status = api.droneStatus(globals.SWARMNAME, self.droneID)
-		
+
 		self.pos = numpy.array([status["x"], status["y"], status["z"]])
 
 	def takeoff(self, height):
@@ -45,7 +45,7 @@ class Drone:
 		Returns:
 			Duration of takeoff
 		"""
-		status = api.takeoff(globals.SWARMNAME, self.droneID, height, 1)
+		status = api.takeoff(globals.SWARMNAME, self.droneID, height, 2)
 		return status["duration"]
 
 	def land(self, height):
@@ -71,7 +71,7 @@ class Drone:
 		"""
 		resp = api.droneGoto(globals.SWARMNAME, self.droneID, point[0], point[1], point[2], 0, 0.5)
 		return resp["duration"]
-	
+
 	def getPackage(self, package):
 		"""Picks up a new package
 
@@ -88,7 +88,7 @@ class Drone:
 		api.pickup(globals.SWARMNAME, self.droneID, package["id"])
 		self.packages.append(package)
 		return totalWeight - package["weight"]
-	
+
 	def deliver(self):
 		"""Attempts to deliver the current package
 

@@ -50,7 +50,7 @@ def followWaypoints(waypoints, drone):
     #         currentWaypointIdx+=1
     #         nextWaypointIdx+=1
     # drone.update()
-    
+
 
 
 
@@ -82,21 +82,21 @@ def followWaypointsComplex(waypoints, drone):
         currentPos = drone.pos
         currentWaypointIdx_tmp = getCurrentWaypointIdx(currentPos, waypoints,r)
         if(currentWaypointIdx_tmp == nextWaypointIdx):
-        
+
             currentWaypointIdx += 1
             nextWaypointIdx += 1
             drone.goToPoint(waypoints[nextWaypointIdx])
             drone.update()
-        
+
 #        else:
-        
+
 #           currentWaypointIdx = currentWaypointIdx_tmp
 #            nextWaypointIdx = currentWaypointIdx+1
 #            drone.goToPoint(waypoints[nextWaypointIdx])
 #            drone.update()
 
 
-        
+
 
 
 def wait(waitTime):
@@ -104,7 +104,7 @@ def wait(waitTime):
 
 	Args:
 		waitTime: seconds to wait
-	
+
 	Returns:
 		nothing
 	"""
@@ -117,7 +117,7 @@ def getCurrentWaypointIdx(pos, waypoints,r):
 	Args:
 		pos: current drone positon
         waypoints: array of np.arrays, the list of waypoints
-	
+
 	Returns:
 		index of the current waypoint if currently in the range of a waypoint
         -1 if currently not in the range of any waypoint
@@ -126,30 +126,23 @@ def getCurrentWaypointIdx(pos, waypoints,r):
         idx+=1
         if(inRangeOfWaypoint(pos, point,r)):
             return len(waypoints)-idx
-       
+
     return -1
-        
 
 
 
-def inRangeOfWaypoint(pos, waypointPos,r):  
+
+def inRangeOfWaypoint(pos, waypointPos,r):
     """check if the position is on the waypoint
 
 	Args:
 		pos: postion of the drone
         waypointPos: position of the waypoint
-	
+
 	Returns:
 		true or false if it is in the range of the waypoint
-	""" 
+	"""
 
     diff = abs(pos-waypointPos)
 
     return (diff[0]<r and diff[1]<r and diff[2]<r)
-    
-    
-
-
-
-
-		

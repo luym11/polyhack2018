@@ -37,7 +37,7 @@ def generateWaypoints(start, end):
     for i in range(N_p):
         col_detected = [False, False, False, False]
         for j in range(N_obs):
-            
+
             # Get the position of the jth obstacle
             obs_pos = MAP[j]
             # Build envelope around obstacles
@@ -46,19 +46,19 @@ def generateWaypoints(start, end):
             col_detected[j] = isInSquare(coll_points[:,i], obs_limits)
             # If there is a collision, then move inner point to a corner
             # Afterwards, recursion!
-            
+
             if col_detected[j]:
                 new_point = movePointOut(coll_points[:,i], obs_pos)
                 # if not np.array_equal(waypoints[-1], new_point):
                 point_col[i] = 1
                 waypoints.append(new_point)
                 # print('appended0 %f, %f', (new_point[0], new_point[1]) )
-    
+
         if(np.array_equal(np.asarray(col_detected), [False, False, False, False])):
             # print('appended1 %f, %f', (coll_points[0,i], coll_points[1,i]) )
             waypoints.append(coll_points[:,i])
-        
-    print(point_col)
+
+    # print(point_col)
     # Stupid shit
     filt_wp = []
     for n in range(len(waypoints)):
