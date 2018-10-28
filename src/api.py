@@ -164,6 +164,19 @@ def land(swarm, drone, height, velocity):
 	"""
 	return makeGET("{0}/{1}/land?z={2}&v={3}".format(swarm, drone, height, velocity))
 
+def pickup(swarm, drone, package):
+	"""Commands a drone to pick up a parcel
+
+	Args:
+		swarm: Swarm ID
+		drone: Drone ID
+		package: Package ID
+	
+	Returns:
+		Server response
+	"""
+	return makeGET("{0}/{1}/pickup?package_id={2}".format(swarm, drone, package))
+
 def droneStatus(swarm, drone):
 	"""Gets a drone's status
 
