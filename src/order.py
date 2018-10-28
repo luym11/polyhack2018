@@ -83,4 +83,8 @@ def getBestBundle3():
 	profitable,
 		key=lambda bundle: 20 * len([pkg for pkg in bundle if pkg["weight"] == 0.5]) + 10 * len([pkg for pkg in bundle if pkg["weight"] == 0.75]) * len([pkg for pkg in bundle if pkg["weight"] == 1])
 	)
+	profitable = sorted(
+		profitable[0],
+		key=lambda pkg: pkg["weight"]
+	)
 	return profitable[0]
