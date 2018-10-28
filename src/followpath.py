@@ -18,24 +18,26 @@ def followWaypoints(waypoints, drone):
 
     currentPos = drone.pos
     currentWaypointIdx = 0
-    nextWaypointIdx = 1
+    nextWaypointIdx = 0
 
     #initial goto
     duration = drone.goToPoint(waypoints[nextWaypointIdx])
     starttime=time.time()
     endtime = starttime+duration
-    while(currentWaypointIdx<len(waypoints)):
-
+    print("length {0}".format(len(waypoints)))
+    while(nextWaypointIdx<len(waypoints)):
         currentPos = drone.pos
         wait(waittime)
         if(time.time()>endtime):
-            currentWaypointIdx+=1
-            nextWaypointIdx+=1
             print("accessing {0}".format(nextWaypointIdx))
             duration = drone.goToPoint(waypoints[nextWaypointIdx])
             print("index ok")
             starttime=time.time()
             endtime = starttime+duration
+            currentWaypointIdx+=1
+            nextWaypointIdx+=1
+    drone.update()
+    
 
 
 
@@ -61,29 +63,25 @@ def followWaypointsComplex(waypoints, drone):
     #initial goto
     duration = drone.goToPoint(waypoints[nextWaypointIdx])
 
-    while(currentWaypointIdx<len(waypoints)):
-
+    while(nextWaypointIdx<len(waypoints)-1):
+        wait(waittime)
+        drone.update()
         currentPos = drone.pos
-        currentWaypointIdx_tmp = getCurrentWaypointIdx(currentPos, waypoints)
+        currentWaypointIdx_tmp = getCurrentWaypointIdx(currentPos, waypoints,r)
         
-        if(currentWaypointIdx_tmp == currentWaypointIdx):
-        
-            wait(waittime)
-            drone.update()
-        
-        elif(currentWaypointIdx_tmp == nextWaypointIdx):
+        if(currentWaypointIdx_tmp == nextWaypointIdx):
         
             currentWaypointIdx += 1
             nextWaypointIdx += 1
             drone.goToPoint(waypoints[nextWaypointIdx])
             drone.update()
         
-        else:
+#        else:
         
-            currentWaypointIdx = currentWaypointIdx_tmp
-            nextWaypointIdx = currentWaypointIdx+1
-            drone.goToPoint(waypoints[nextWaypointIdx])
-            drone.update()
+#           currentWaypointIdx = currentWaypointIdx_tmp
+#            nextWaypointIdx = currentWaypointIdx+1
+#            drone.goToPoint(waypoints[nextWaypointIdx])
+#            drone.update()
 
 
         
@@ -101,7 +99,7 @@ def wait(waitTime):
     time.sleep(waitTime)
 
 
-def getCurrentWaypointIdx(pos, waypoints):
+def getCurrentWaypointIdx(pos, waypoints,r):
     """find the Way point it is currently on.
 
 	Args:
@@ -112,17 +110,17 @@ def getCurrentWaypointIdx(pos, waypoints):
 		index of the current waypoint if currently in the range of a waypoint
         -1 if currently not in the range of any waypoint
 	"""
-    for idx, point in enumerate(waypoints):
+    for idx, point in enumerate(reversed(waypoints)):
         idx+=1
-        if(inRangeOfWaypoint(pos, point)):
-            return idx
+        if(inRangeOfWaypoint(pos, point,r)):
+            return len(waypoints)-idx
        
     return -1
         
 
 
 
-def inRangeOfWaypoint(pos, waypointPos):  
+def inRangeOfWaypoint(pos, waypointPos,r):  
     """check if the position is on the waypoint
 
 	Args:

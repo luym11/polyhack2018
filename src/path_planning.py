@@ -12,20 +12,21 @@ def generateWaypoints(start, end):
     dist_vec = end - start
     # print(dist_vec)
     # Determine number of intermediate points based on distance
-    # dist = np.linalg.norm(dist_vec)
-    # N_p = np.ceil(10*dist, 0)
-
-    N_p = 15 # HARDCODE, REMOVE!
+    dist = np.linalg.norm(dist_vec)
+    N_p = int(7 * dist) + 1 #np.ceil(20*dist)
+    print("dist",dist)
+    print("N_p",N_p)
+    #N_p = 15 # HARDCODE, REMOVE!
     steps = np.linspace(0, 1, N_p)  # 0 to 1 with 1/N_p step_size
     # print(steps)
     # Create intermediate points
     x_coords = start[0] + steps*dist_vec[0]
     y_coords = start[1] + steps*dist_vec[1]
-    z_coords = start[2] + steps*dist_vec[2]
+    z_coords = 0.3*np.ones((N_p,))
 
-
+    print("1")
     coll_points = np.vstack([x_coords, y_coords, z_coords])
-    # print(coll_points)
+    print(coll_points)
     N_obs = 4 # CHANGE
     col_detected = False
 
@@ -40,13 +41,13 @@ def generateWaypoints(start, end):
             obs_limits = returnEnvelope(obs_pos)
             # Check for collision (ith point with all obstacles)
             col_detected[j] = isInSquare(coll_points[:,i], obs_limits)
-
             # If there is a collision, then move inner point to a corner
             # Afterwards, recursion!
             
             if col_detected[j]:
                 new_point = movePointOut(coll_points[:,i], obs_pos)
-                waypoints.append(new_point)
+                if not np.array_equal(waypoints[-1], new_point):
+                    waypoints.append(new_point)
                 # print('appended0 %f, %f', (new_point[0], new_point[1]) )
     
         if(np.array_equal(np.asarray(col_detected), [False, False, False, False])):
@@ -78,10 +79,8 @@ def isInSquare(point, limits):
 
     within_x = (x_pos < x_max and x_pos > x_min)
     within_y = (y_pos < y_max and y_pos > y_min)
-    if within_x and within_y:
-        return True
-    else:
-        return False
+    return (within_x and within_y)
+
 
 def movePointOut(p, c):
     '''

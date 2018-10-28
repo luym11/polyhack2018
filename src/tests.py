@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 MAP = api.getArena()["buildings"]
 
 wp = []
-new_wp = pp.generateWaypoints( np.array([0,0,0.5]), np.array([3.5,2.5,0.5]), wp )
+new_wp = pp.generateWaypoints(np.array([2.2,1.6, 0.3]), np.array([3.2, 3.2,0.3]))
 
 # print(len(new_wp))
 # print(new_wp[0][0])
