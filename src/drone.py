@@ -38,7 +38,12 @@ class Drone:
         """
         status = api.droneStatus(globals.SWARMNAME, self.droneID)
         self.pos = numpy.array([status["x"], status["y"], status["z"]])
-        DRONEPOSITIONS[self.droneID] = self.pos
+        globals.DRONEPOSITIONS[self.droneID] = self.pos
+        print(globals.DRONEPOSITIONS)
+        
+
+ #   def checkCollision(self):
+
 
     def takeoff(self, height):
         """Commands the drone to takeoff

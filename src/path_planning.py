@@ -118,7 +118,7 @@ def generateWaypoints(start, end):
 
         
 
-    print(point_col)
+    # print(point_col)
 
     # Stupid shit
 
