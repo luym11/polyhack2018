@@ -3,95 +3,100 @@ import globals
 import numpy
 
 class Drone:
-	"""Creates a new Drone object
+    """Creates a new Drone object
 
-	Args:
-		id: Drone ID
-		addr: Drone address
-	"""
-	def __init__(self, id, addr):
-		self.droneID = id
-		self.droneAddr = addr
-		status = api.connectDrone(globals.SWARMNAME, id, addr)
-		status = api.droneStatus(globals.SWARMNAME, id)
-		self.pos = numpy.array([status["x"], status["y"], status["z"]])
-		self.home = self.pos
-		self.packages = []
-		self.currentDelivery = ""
-		api.calibrateDrone(globals.SWARMNAME, id)
+    Args:
+        id: Drone ID
+        addr: Drone address
+    """
+    def __init__(self, id, addr):
+        self.droneID = id
+        self.droneAddr = addr
+        status = api.connectDrone(globals.SWARMNAME, id, addr)
+        status = api.droneStatus(globals.SWARMNAME, id)
+        self.pos = numpy.array([status["x"], status["y"], status["z"]])
+        self.home = self.pos
+        self.packages = []
+        self.currentDelivery = ""
+        api.calibrateDrone(globals.SWARMNAME, id)
 
-	def disconnect(self):
-		"""Disconnects the drone from the server
+    def disconnect(self):
+        """Disconnects the drone from the server
 
-		Returns:
-			Whether the disconnect succeeded
-		"""
-		status = api.disconnectDrone(globals.SWARMNAME, self.droneID)
-		return status["success"]
-	
-	def update(self):
-		"""Updates the drone's properties
-		"""
-		status = api.droneStatus(globals.SWARMNAME, self.droneID)
-		self.pos = numpy.array([status["x"], status["y"], status["z"]])
+        Returns:
+            Whether the disconnect succeeded
+        """
+        status = api.disconnectDrone(globals.SWARMNAME, self.droneID)
+        return status["success"]
+    
+    def holdPos(self):
+        self.update()
+        self.gotoPoint(self.pos)
 
-	def takeoff(self, height):
-		"""Commands the drone to takeoff
+    def update(self):
+        """Updates the drone's properties
+        """
+        status = api.droneStatus(globals.SWARMNAME, self.droneID)
+        self.pos = numpy.array([status["x"], status["y"], status["z"]])
+        DRONEPOSITIONS[self.droneID] = self.pos
 
-		Args:
-			height: Desired height
+    def takeoff(self, height):
+        """Commands the drone to takeoff
 
-		Returns:
-			Duration of takeoff
-		"""
-		status = api.takeoff(globals.SWARMNAME, self.droneID, height, 0.25)
-		return status["duration"]
+        Args:
+            height: Desired height
 
-	def land(self, height):
-		"""Commands the drone to land
+        Returns:
+            Duration of takeoff
+        """
+        status = api.takeoff(globals.SWARMNAME, self.droneID, height, 0.25)
+        return status["duration"]
 
-		Args:
-			height: Height of landing area
+    def land(self, height):
+        """Commands the drone to land
 
-		Returns:
-			Duration of landing
-		"""
-		status = api.land(globals.SWARMNAME, self.droneID, height, 0.25)
-		return status["duration"]
+        Args:
+            height: Height of landing area
 
-	def goToPoint(self, point):
-		"""Commands the drone to fly to a given point
+        Returns:
+            Duration of landing
+        """
+        status = api.land(globals.SWARMNAME, self.droneID, height, 0.25)
+        return status["duration"]
 
-		Args:
-			point: The destination point as a numpy array
+    def goToPoint(self, point):
+        """Commands the drone to fly to a given point
 
-		Returns:
-			Estimated travel time before the drone reaches the point
-		"""
-		resp = api.droneGoto(globals.SWARMNAME, self.droneID, point[0], point[1], point[2], 0, 0.25)
-		return resp["duration"]
-	
-	def getPackage(self, package):
-		"""Picks up a new package
+        Args:
+            point: The destination point as a numpy array
 
-		Args:
-			package: Package data of new package
+        Returns:
+            Estimated travel time before the drone reaches the point
+        """
+        resp = api.droneGoto(globals.SWARMNAME, self.droneID, point[0], point[1], point[2], 0, 0.25)
+        return resp["duration"]
+    
+    def getPackage(self, package):
+        """Picks up a new package
 
-		Returns:
-			If the package was picked up successfully, the amount of weight that can
-			still be carried by the drone. Otherwise, -1.
-		"""
-		totalWeight = sum([pkg["weight"] for pkg in self.packages])
-		if totalWeight + package["weight"] > 3:
-			return -1
-		api.pickup(globals.SWARMNAME, self.droneID, package["id"])
-		self.packages.append(package)
-		return totalWeight - package["weight"]
-	
-	def deliver(self):
-		"""Attempts to deliver the current package
+        Args:
+            package: Package data of new package
 
-		Returns:
-			Whether the delivery succeeded
-		"""
-		return [api.deliver(globals.SWARMNAME, self.droneID, pkg["id"]) for pkg in self.packages]
+        Returns:
+            If the package was picked up successfully, the amount of weight that can
+            still be carried by the drone. Otherwise, -1.
+        """
+        totalWeight = sum([pkg["weight"] for pkg in self.packages])
+        if totalWeight + package["weight"] > 3:
+            return -1
+        api.pickup(globals.SWARMNAME, self.droneID, package["id"])
+        self.packages.append(package)
+        return totalWeight - package["weight"]
+    
+    def deliver(self):
+        """Attempts to deliver the current package
+
+        Returns:
+            Whether the delivery succeeded
+        """
+        return [api.deliver(globals.SWARMNAME, self.droneID, pkg["id"]) for pkg in self.packages]
