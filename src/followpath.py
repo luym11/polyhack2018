@@ -12,30 +12,45 @@ def followWaypoints(waypoints, drone):
     Returns:
         Something
     """
-    r = 0.05
-    waittime = 0.01
+    r = 0.3
+    waittime = 0.4
     # init
 
     currentPos = drone.pos
     currentWaypointIdx = 0
-    nextWaypointIdx = 1
+    nextWaypointIdx = 0
+    drone.update()
+    for pt in waypoints:
+        duration = drone.goToPoint(pt)
+        wait(duration + waittime)
+        # drone.update()
+    drone.update()
 
     #initial goto
-    duration = drone.goToPoint(waypoints[nextWaypointIdx])
-    starttime=time.time()
-    endtime = starttime+duration
-    while(currentWaypointIdx<len(waypoints)):
-
-        currentPos = drone.pos
-        wait(waittime)
-        if(time.time()>endtime):
-            currentWaypointIdx+=1
-            nextWaypointIdx+=1
-            print("accessing {0}".format(nextWaypointIdx))
-            duration = drone.goToPoint(waypoints[nextWaypointIdx])
-            print("index ok")
-            starttime=time.time()
-            endtime = starttime+duration
+#   duration = drone.goToPoint(waypoints[nextWaypointIdx])
+#  starttime=time.time()
+#    endtime = starttime+duration+1
+#    print("length {0}".format(len(waypoints)))
+#    while(nextWaypointIdx<len(waypoints)):
+#        drone.update()
+#        duration = drone.goToPoint(waypoints[nextWaypointIdx])
+#        starttime=time.time()
+#        endtime = starttime+duration
+#        currentPos = drone.pos
+    #     wait(waittime)
+    #     print("currentPos",currentPos)
+    #     print("waypoint",waypoints[currentWaypointIdx])
+    #     if(time.time()>endtime ): #and np.linalg.norm(currentPos-waypoints[currentWaypointIdx])<r
+    #         print("accessing {0}".format(currentWaypointIdx))
+    #         drone.update()
+    #         duration = drone.goToPoint(waypoints[nextWaypointIdx])
+    #         print("index ok")
+    #         starttime=time.time()
+    #         endtime = starttime+duration
+    #         currentWaypointIdx+=1
+    #         nextWaypointIdx+=1
+    # drone.update()
+    
 
 
 
@@ -56,34 +71,29 @@ def followWaypointsComplex(waypoints, drone):
 
     currentPos = drone.pos
     currentWaypointIdx = 0
-    nextWaypointIdx = 1
+    nextWaypointIdx = 0
 
     #initial goto
     duration = drone.goToPoint(waypoints[nextWaypointIdx])
-
-    while(currentWaypointIdx<len(waypoints)):
-
+    nextWaypointIdx+=1
+    while(nextWaypointIdx<len(waypoints)-1):
+        wait(waittime)
+        drone.update()
         currentPos = drone.pos
-        currentWaypointIdx_tmp = getCurrentWaypointIdx(currentPos, waypoints)
-        
-        if(currentWaypointIdx_tmp == currentWaypointIdx):
-        
-            wait(waittime)
-            drone.update()
-        
-        elif(currentWaypointIdx_tmp == nextWaypointIdx):
+        currentWaypointIdx_tmp = getCurrentWaypointIdx(currentPos, waypoints,r)
+        if(currentWaypointIdx_tmp == nextWaypointIdx):
         
             currentWaypointIdx += 1
             nextWaypointIdx += 1
             drone.goToPoint(waypoints[nextWaypointIdx])
             drone.update()
         
-        else:
+#        else:
         
-            currentWaypointIdx = currentWaypointIdx_tmp
-            nextWaypointIdx = currentWaypointIdx+1
-            drone.goToPoint(waypoints[nextWaypointIdx])
-            drone.update()
+#           currentWaypointIdx = currentWaypointIdx_tmp
+#            nextWaypointIdx = currentWaypointIdx+1
+#            drone.goToPoint(waypoints[nextWaypointIdx])
+#            drone.update()
 
 
         
@@ -101,7 +111,7 @@ def wait(waitTime):
     time.sleep(waitTime)
 
 
-def getCurrentWaypointIdx(pos, waypoints):
+def getCurrentWaypointIdx(pos, waypoints,r):
     """find the Way point it is currently on.
 
 	Args:
@@ -112,17 +122,17 @@ def getCurrentWaypointIdx(pos, waypoints):
 		index of the current waypoint if currently in the range of a waypoint
         -1 if currently not in the range of any waypoint
 	"""
-    for idx, point in enumerate(waypoints):
+    for idx, point in enumerate(reversed(waypoints)):
         idx+=1
-        if(inRangeOfWaypoint(pos, point)):
-            return idx
+        if(inRangeOfWaypoint(pos, point,r)):
+            return len(waypoints)-idx
        
     return -1
         
 
 
 
-def inRangeOfWaypoint(pos, waypointPos):  
+def inRangeOfWaypoint(pos, waypointPos,r):  
     """check if the position is on the waypoint
 
 	Args:

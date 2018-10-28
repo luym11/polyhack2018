@@ -10,7 +10,7 @@ import numpy
 import time
 
 askUser = True
-api.debugMode = True
+#api.debugMode = True
 keepDelivering = True
 
 droneNum = int(input("Enter drone number: ")) - 24
@@ -22,7 +22,7 @@ try:
 		drone.getPackage(package)
 		drone.currentDelivery = package["id"]
 		time.sleep(drone.takeoff(0.3))
-		waypoints = generateWaypoints(drone.pos, numpy.array([package["coordinates"][0], package["coordinates"][1], 0.3]))[1:]
+		waypoints = generateWaypoints(drone.pos, numpy.array([package["coordinates"][0], package["coordinates"][1], 0.3]))
 		followWaypoints(waypoints, drone)
 		time.sleep(drone.land(0))
 		drone.deliver()
