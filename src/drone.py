@@ -44,7 +44,7 @@ class Drone:
 		Returns:
 			Duration of takeoff
 		"""
-		status = api.takeoff(globals.SWARMNAME, self.droneID, height, 0.5)
+		status = api.takeoff(globals.SWARMNAME, self.droneID, height, 0.25)
 		return status["duration"]
 
 	def land(self, height):
@@ -56,7 +56,7 @@ class Drone:
 		Returns:
 			Duration of landing
 		"""
-		status = api.land(globals.SWARMNAME, self.droneID, height, 0.5)
+		status = api.land(globals.SWARMNAME, self.droneID, height, 0.25)
 		return status["duration"]
 
 	def goToPoint(self, point):
@@ -68,7 +68,7 @@ class Drone:
 		Returns:
 			Estimated travel time before the drone reaches the point
 		"""
-		resp = api.droneGoto(globals.SWARMNAME, self.droneID, point[0], point[1], point[2], 0, 0.5)
+		resp = api.droneGoto(globals.SWARMNAME, self.droneID, point[0], point[1], point[2], 0, 0.25)
 		return resp["duration"]
 	
 	def getPackage(self, package):
