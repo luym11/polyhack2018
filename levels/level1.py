@@ -2,7 +2,6 @@ import sys
 sys.path.append("../src")
 
 from followpath import followWaypoints
-import signal
 from drone import Drone
 import globals
 import api
@@ -13,12 +12,6 @@ import time
 askUser = True
 api.debugMode = True
 keepDelivering = True
-
-def terminate(sig, frame):
-	global keepDelivering
-	keepDelivering = False
-
-#signal.signal(signal.SIGINT, terminate)
 
 droneNum = int(input("Enter drone number: ")) - 24
 droneID = globals.DRONES[droneNum]

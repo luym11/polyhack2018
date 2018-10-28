@@ -2,7 +2,6 @@ import sys
 sys.path.append("../src")
 
 from followpath import followWaypoints
-import signal
 from drone import Drone
 import globals
 import api
@@ -15,29 +14,25 @@ askUser = True
 api.debugMode = True
 keepDelivering = True
 
-def terminate(sig, frame):
-	global keepDelivering
-	keepDelivering = False
-
-signal.signal(signal.SIGINT, terminate)
-
 droneNum = int(input("Enter drone number: ")) - 24
 droneID = globals.DRONES[droneNum]
 drone = Drone(droneID, globals.DRONEADDRS[droneID])
 try:
 	while keepDelivering:
 		order.refillQueue()
-		pkgs = order.getBestBundle(drone.home)
-		for pkg in pkgs:
-			drone.getPackage(pkg)
+		parcels = order.getBestBundle(drone.home)
+		for parcel in parcels:
+			drone.getPackage(parcel)
 		time.sleep(drone.takeoff(0.3))
-		waypoints = generateWaypoints(drone.pos, numpy.array([package["coordinates"][0], package["coordinates"][1], 0.3])).delete(0)
-		followWaypoints(waypoints, drone)
+		waypoints = generateWaypoints(drone.pos, numpy.array([parcels[0]["coordinates"][0], parcels[0]["coordinates"][1], 0.3]))
+		followWaypoints(drone, waypoints)
+		#time.sleep(drone.goToPoint(numpy.array([3.4, 1.4, 0.3])))
 		time.sleep(drone.land(0))
 		print(drone.deliver())
 		time.sleep(drone.takeoff(0.3))
 		waypoints = generateWaypoints(drone.pos, drone.home)
-		followWaypoints(waypoints, drone)
+		followWaypoints(drone, waypoints)
+		#time.sleep(drone.goToPoint(drone.home))
 		time.sleep(drone.land(0))
 		if askUser and input("Continue? [y/N]: ") != "y":
 			keepDelivering = False

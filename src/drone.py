@@ -84,7 +84,7 @@ class Drone:
 		totalWeight = sum([pkg["weight"] for pkg in self.packages])
 		if totalWeight + package["weight"] > 3:
 			return -1
-		api.pickup(globals.SWARMNAME, self.droneID, pkg["id"])
+		api.pickup(globals.SWARMNAME, self.droneID, package["id"])
 		self.packages.append(package)
 		return totalWeight - package["weight"]
 	
@@ -94,4 +94,4 @@ class Drone:
 		Returns:
 			Whether the delivery succeeded
 		"""
-		return [api.deliver(globals.SWARMNAME, self.droneID, pkg) for pkg in self.packages]
+		return [api.deliver(globals.SWARMNAME, self.droneID, pkg["id"]) for pkg in self.packages]
