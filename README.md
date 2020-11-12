@@ -7,6 +7,7 @@ This solution consists of the following four parts.
 3. The third feature takes the weights of different deliveries into account while assigning deliveries. 
 4. Some initial developments for collision avoidance between different drones. 
 
-
+An example scene of our solution deployed on crazyflie platform. 
+![deploy](/polyhack2018.png)
 
 [An example video](https://youtu.be/cB8XZX8ury8). 
